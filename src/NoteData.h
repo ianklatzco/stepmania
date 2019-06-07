@@ -35,18 +35,18 @@ public:
 
 	NoteData(): m_TapNotes() {}
 
-	iterator begin( int iTrack )					{ return m_TapNotes[iTrack].begin(); }
-	const_iterator begin( int iTrack ) const			{ return m_TapNotes[iTrack].begin(); }
-	reverse_iterator rbegin( int iTrack )				{ return m_TapNotes[iTrack].rbegin(); }
-	const_reverse_iterator rbegin( int iTrack ) const		{ return m_TapNotes[iTrack].rbegin(); }
-	iterator end( int iTrack )					{ return m_TapNotes[iTrack].end(); }
-	const_iterator end( int iTrack ) const				{ return m_TapNotes[iTrack].end(); }
-	reverse_iterator rend( int iTrack )				{ return m_TapNotes[iTrack].rend(); }
-	const_reverse_iterator rend( int iTrack ) const			{ return m_TapNotes[iTrack].rend(); }
-	iterator lower_bound( int iTrack, int iRow )			{ return m_TapNotes[iTrack].lower_bound( iRow ); }
-	const_iterator lower_bound( int iTrack, int iRow ) const	{ return m_TapNotes[iTrack].lower_bound( iRow ); }
-	iterator upper_bound( int iTrack, int iRow )			{ return m_TapNotes[iTrack].upper_bound( iRow ); }
-	const_iterator upper_bound( int iTrack, int iRow ) const	{ return m_TapNotes[iTrack].upper_bound( iRow ); }
+	iterator               begin( int iTrack )							{ return m_TapNotes[iTrack].begin(); }
+	const_iterator         begin( int iTrack ) const					{ return m_TapNotes[iTrack].begin(); }
+	reverse_iterator       rbegin( int iTrack )							{ return m_TapNotes[iTrack].rbegin(); }
+	const_reverse_iterator rbegin( int iTrack ) const					{ return m_TapNotes[iTrack].rbegin(); }
+	iterator               end( int iTrack )							{ return m_TapNotes[iTrack].end(); }
+	const_iterator         end( int iTrack ) const						{ return m_TapNotes[iTrack].end(); }
+	reverse_iterator       rend( int iTrack )							{ return m_TapNotes[iTrack].rend(); }
+	const_reverse_iterator rend( int iTrack ) const						{ return m_TapNotes[iTrack].rend(); }
+	iterator               lower_bound( int iTrack, int iRow )			{ return m_TapNotes[iTrack].lower_bound( iRow ); }
+	const_iterator         lower_bound( int iTrack, int iRow ) const	{ return m_TapNotes[iTrack].lower_bound( iRow ); }
+	iterator               upper_bound( int iTrack, int iRow )			{ return m_TapNotes[iTrack].upper_bound( iRow ); }
+	const_iterator         upper_bound( int iTrack, int iRow ) const	{ return m_TapNotes[iTrack].upper_bound( iRow ); }
 	void swap( NoteData &nd )
 	{
 		m_TapNotes.swap(nd.m_TapNotes);
