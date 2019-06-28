@@ -2551,6 +2551,11 @@ void Player::UpdateJudgedRows()
 					for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
 					{
 						const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
+
+						// Prevent notes being scored by both players in couples mode
+						if( m_pPlayerState->m_PlayerNumber != tn.pn )
+							continue;
+
 						if (tn.type == TapNoteType_Empty ||
 							tn.type == TapNoteType_Mine ||
 							tn.type == TapNoteType_AutoKeysound) continue;
@@ -2559,7 +2564,12 @@ void Player::UpdateJudgedRows()
 				}
 				else
 				{
-					SetJudgment( iRow, m_NoteData.GetFirstTrackWithTapOrHoldHead(iRow), NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iRow ) );
+					const TapNote& tn = NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iRow );
+					// Prevent notes being scored by both players in couples mode
+					if( m_pPlayerState->m_PlayerNumber != tn.pn )	
+						continue;
+
+					SetJudgment( iRow, m_NoteData.GetFirstTrackWithTapOrHoldHead(iRow), tn );
 				}
 				HandleTapRowScore( iRow );
 			}
