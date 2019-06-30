@@ -1,14 +1,25 @@
 #include "global.h"
 #include "ScreenGameplayNormal.h"
-
+#include "GameState.h"
 
 REGISTER_SCREEN_CLASS( ScreenGameplayNormal );
 
 void ScreenGameplayNormal::FillPlayerInfo( vector<PlayerInfo> &vPlayerInfoOut )
 {
+	const PlayerNumber master = GAMESTATE->GetMasterPlayerNumber();
+
 	vPlayerInfoOut.resize( NUM_PLAYERS );
 	FOREACH_PlayerNumber( p )
-		vPlayerInfoOut[p].Load( p, MultiPlayer_Invalid, true, Difficulty_Invalid );
+	{
+		if( p == master )
+		{
+			vPlayerInfoOut[p].Load( p, MultiPlayer_Invalid, true, Difficulty_Invalid );
+		}
+		else
+		{
+			vPlayerInfoOut[p].Load( p, MultiPlayer_Invalid, true, Difficulty_Invalid, &vPlayerInfoOut[master] );
+		}
+	}
 };
 
 // lua end

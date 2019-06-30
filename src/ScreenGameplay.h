@@ -41,7 +41,7 @@ public:
 	PlayerInfo();
 	~PlayerInfo();
 
-	void Load( PlayerNumber pn, MultiPlayer mp, bool bShowNoteField, int iAddToDifficulty );
+	void Load( PlayerNumber pn, MultiPlayer mp, bool bShowNoteField, int iAddToDifficulty, const PlayerInfo* masterPlayer = nullptr );
 	void LoadDummyP1( int iDummyIndex, int iAddToDifficulty );
 
 	/** @brief The player has lost all of their lives: show the special game over. */

@@ -2548,6 +2548,7 @@ void Player::UpdateJudgedRows()
 					continue;
 				if( bSeparately )
 				{
+					// Each note on the row gets judged separately
 					for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
 					{
 						const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
@@ -2564,12 +2565,23 @@ void Player::UpdateJudgedRows()
 				}
 				else
 				{
-					const TapNote& tn = NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iRow );
-					// Prevent notes being scored by both players in couples mode
-					if( m_pPlayerState->m_PlayerNumber != tn.pn )	
-						continue;
+					// The entire row is judged as if it's one tap
+					// But for couples mode we only want to judge this player's notes
+					// and no the others
+					//
+					// Find the first note on the row for the player - This will decide the
+					// judgement for all the player's notes in the row
+					for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
+					{
+						const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
 
-					SetJudgment( iRow, m_NoteData.GetFirstTrackWithTapOrHoldHead(iRow), tn );
+						// Prevent notes being scored by both players in couples mode
+						if( m_pPlayerState->m_PlayerNumber != tn.pn )
+							continue;
+
+						SetJudgment( iRow, iTrack, tn );
+						break;
+					}
 				}
 				HandleTapRowScore( iRow );
 			}
@@ -2679,7 +2691,10 @@ void Player::FlashGhostRow( int iRow )
 
 	for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
 	{
-		const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
+		TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
+
+		if( m_pPlayerState->m_PlayerNumber != tn.pn )
+			continue;
 
 		if(tn.type == TapNoteType_Empty || tn.type == TapNoteType_Mine ||
 			tn.type == TapNoteType_Fake || tn.result.bHidden)
@@ -2692,7 +2707,7 @@ void Player::FlashGhostRow( int iRow )
 		}
 		if( lastTNS >= m_pPlayerState->m_PlayerOptions.GetCurrent().m_MinTNSToHideNotes || bBlind )
 		{
-			HideNote( iTrack, iRow );
+			tn.result.bHidden = true;
 		}
 	}
 }

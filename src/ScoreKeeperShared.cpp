@@ -3,11 +3,13 @@
 #include "RageLog.h"
 #include "GameState.h"
 #include "PlayerState.h"
+#include "ScreenGameplay.h"
 
 /* In Routine, we have two Players, but the master one handles all of the scoring.  The other
  * one will just receive misses for everything, and shouldn't do anything. */
-ScoreKeeperShared::ScoreKeeperShared( PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats ) :
-	ScoreKeeperNormal( pPlayerState, pPlayerStageStats )
+ScoreKeeperShared::ScoreKeeperShared( PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats, const PlayerInfo* masterPlayer ) :
+  ScoreKeeperNormal( pPlayerState, pPlayerStageStats ),
+  m_pMasterPlayer(masterPlayer)
 {
 }
 
@@ -46,42 +48,60 @@ void ScoreKeeperShared::OnNextSong( int iSongInCourseIndex, const Steps* pSteps,
 void ScoreKeeperShared::HandleTapScore( const TapNote &tn )
 {
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
+	{
+		if( m_pMasterPlayer ) m_pMasterPlayer->m_pPrimaryScoreKeeper->HandleTapScore( tn );
 		return;
+	}
 	ScoreKeeperNormal::HandleTapScore( tn );
 }
 
 void ScoreKeeperShared::HandleTapRowScore( const NoteData &nd, int iRow )
 {
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
+	{
+		if( m_pMasterPlayer ) m_pMasterPlayer->m_pPrimaryScoreKeeper->HandleTapRowScore( nd, iRow );
 		return;
+	}
 	ScoreKeeperNormal::HandleTapRowScore( nd, iRow );
 }
 
 void ScoreKeeperShared::HandleHoldScore( const TapNote &tn )
 {
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
+	{
+		if( m_pMasterPlayer ) m_pMasterPlayer->m_pPrimaryScoreKeeper->HandleHoldScore( tn );
 		return;
+	}
 	ScoreKeeperNormal::HandleHoldScore( tn );
 }
 
 void ScoreKeeperShared::HandleHoldActiveSeconds( float fMusicSecondsHeld )
 {
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
+	{
+		if( m_pMasterPlayer ) m_pMasterPlayer->m_pPrimaryScoreKeeper->HandleHoldActiveSeconds( fMusicSecondsHeld );
 		return;
+	}
 	ScoreKeeperNormal::HandleHoldActiveSeconds( fMusicSecondsHeld );
 }
 
 void ScoreKeeperShared::HandleHoldCheckpointScore( const NoteData &nd, int iRow, int iNumHoldsHeldThisRow, int iNumHoldsMissedThisRow )
 {
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
+	{
+		if( m_pMasterPlayer ) m_pMasterPlayer->m_pPrimaryScoreKeeper->HandleHoldCheckpointScore( nd, iRow, iNumHoldsHeldThisRow,  iNumHoldsMissedThisRow );
 		return;
+	}
 	ScoreKeeperNormal::HandleHoldCheckpointScore( nd, iRow, iNumHoldsHeldThisRow,  iNumHoldsMissedThisRow );
 }
 
 void ScoreKeeperShared::HandleTapScoreNone()
 {
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
+	{
+		if( m_pMasterPlayer ) m_pMasterPlayer->m_pPrimaryScoreKeeper->HandleTapScoreNone();
 		return;
+	}
 	ScoreKeeperNormal::HandleTapScoreNone();
 }
 

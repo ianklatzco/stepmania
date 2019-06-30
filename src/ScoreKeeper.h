@@ -9,6 +9,7 @@ class Song;
 class Steps;
 class PlayerState;
 class PlayerStageStats;
+class PlayerInfo;
 struct TapNote;
 struct AttackArray;
 
@@ -21,7 +22,7 @@ struct AttackArray;
 class ScoreKeeper
 {
 public:
-	static ScoreKeeper* MakeScoreKeeper( RString sClassName, PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats );
+	static ScoreKeeper* MakeScoreKeeper( RString sClassName, PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats, const PlayerInfo* masterPlayer = nullptr);
 
 protected:
 	PlayerState		*m_pPlayerState;

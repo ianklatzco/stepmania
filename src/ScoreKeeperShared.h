@@ -4,11 +4,13 @@
 #include "ScoreKeeperNormal.h"
 #include "PlayerNumber.h"
 
+class PlayerInfo;
+
 /** @brief ScoreKeeper for Routine mode. */
 class ScoreKeeperShared : public ScoreKeeperNormal
 {
 public:
-	ScoreKeeperShared( PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats );
+	ScoreKeeperShared( PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats, const PlayerInfo* masterPlayer );
 
 	virtual void Load(
 	const vector<Song*> &apSongs,
@@ -25,6 +27,9 @@ public:
 	virtual void HandleHoldActiveSeconds( float fMusicSecondsHeld );
 	virtual void HandleHoldCheckpointScore( const NoteData &nd, int iRow, int iNumHoldsHeldThisRow, int iNumHoldsMissedThisRow );
 	virtual void HandleTapScoreNone();
+
+private:
+	const PlayerInfo* m_pMasterPlayer;
 };
 #endif
 
