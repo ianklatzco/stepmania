@@ -22,7 +22,6 @@ const RString CUSTOM_SONG_PATH= "/@mem/";
 
 bool HexToBinary(const RString&, RString&);
 void utf8_sanitize(RString &);
-void UnicodeUpperLower(wchar_t *, size_t, const unsigned char *);
 
 RandomGen g_RandomNumberGenerator;
 
@@ -1855,25 +1854,18 @@ void MakeLower( char *p, size_t iLen )
 	}
 }
 
-void UnicodeUpperLower( wchar_t *p, size_t iLen, const unsigned char pMapping[256] )
-{
-	wchar_t *pEnd = p + iLen;
-	while( p != pEnd )
-	{
-		if( *p < 256 )
-			*p = pMapping[*p];
-		++p;
-	}
-}
-
 void MakeUpper( wchar_t *p, size_t iLen )
 {
-	UnicodeUpperLower( p, iLen, g_UpperCase );
+  std::wstring str(p);
+  std::transform(str.begin(), str.end(), str.begin(), std::towupper);
+  std::wcscpy(p, str.c_str());
 }
 
 void MakeLower( wchar_t *p, size_t iLen )
 {
-	UnicodeUpperLower( p, iLen, g_LowerCase );
+  std::wstring str(p);
+  std::transform(str.begin(), str.end(), str.begin(), std::towlower);
+  std::wcscpy(p, str.c_str());
 }
 
 int StringToInt( const RString &sString )
