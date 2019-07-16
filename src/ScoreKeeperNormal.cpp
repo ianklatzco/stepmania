@@ -386,6 +386,8 @@ int ScoreKeeperNormal::CalcNextToastyAt(int level)
 	return m_next_toasty_at + amount;
 }
 
+// In the case of a mine, report an updated score. Else, do nothing.
+// You are probably looking for HandleTapRowScore instead of this.
 void ScoreKeeperNormal::HandleTapScore( const TapNote &tn )
 {
 	TapNoteScore tns = tn.result.tns;
@@ -418,6 +420,7 @@ void ScoreKeeperNormal::HandleTapScore( const TapNote &tn )
 		MESSAGEMAN->Broadcast( msg );
 	}
 
+	// Implementation currently does nothing???
 	AddTapScore( tns );
 }
 
