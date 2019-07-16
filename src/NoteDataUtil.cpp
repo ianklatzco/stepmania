@@ -430,6 +430,7 @@ void NoteDataUtil::GetSMNoteDataString( const NoteData &in, RString &sRet )
 	}
 }
 
+// Called whenever you load songs (e.g. Reload Songs and Courses from theme.)
 void NoteDataUtil::SplitCompositeNoteData( const NoteData &in, vector<NoteData> &out )
 {
 	if( !in.IsComposite() )
@@ -457,6 +458,7 @@ void NoteDataUtil::SplitCompositeNoteData( const NoteData &in, vector<NoteData> 
 			 occuring to begin with, but at this time, I am unsure how to deal with it.
 			 Hopefully this hack can be removed soon. -- Jason "Wolfman2000" Felds
 			 */
+			// I believe this code assigns all notes with a tn.pn greater than PlayerNumber to player 1. -ian5v.
 			const Style *curStyle = GAMESTATE->GetCurrentStyle(PLAYER_INVALID);
 			if( (curStyle == NULL || curStyle->m_StyleType == StyleType_TwoPlayersSharedSides )
 				&& int( tn.pn ) > NUM_PlayerNumber )
@@ -472,6 +474,8 @@ void NoteDataUtil::SplitCompositeNoteData( const NoteData &in, vector<NoteData> 
 	}
 }
 
+// Looks like this is called every time you start a routine song.
+// Might also be called for the others.
 void NoteDataUtil::CombineCompositeNoteData( NoteData &out, const vector<NoteData> &in )
 {
 	FOREACH_CONST( NoteData, in, nd )

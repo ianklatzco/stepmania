@@ -6,6 +6,9 @@
 
 /* In Routine, we have two Players, but the master one handles all of the scoring.  The other
  * one will just receive misses for everything, and shouldn't do anything. */
+
+// Ideally we can implement things so that each player gets judged for each note. -ian5v
+
 ScoreKeeperShared::ScoreKeeperShared( PlayerState *pPlayerState, PlayerStageStats *pPlayerStageStats ) :
 	ScoreKeeperNormal( pPlayerState, pPlayerStageStats )
 {
@@ -52,6 +55,8 @@ void ScoreKeeperShared::HandleTapScore( const TapNote &tn )
 
 void ScoreKeeperShared::HandleTapRowScore( const NoteData &nd, int iRow )
 {
+	// printf("shared scorekeeper pn: %d\n", m_pPlayerState->m_PlayerNumber);
+	// Why can't I uncomment the following line? Why can't both P1 and P2 be judged? -ian5v
 	if( m_pPlayerState->m_PlayerNumber != GAMESTATE->GetMasterPlayerNumber() )
 		return;
 	ScoreKeeperNormal::HandleTapRowScore( nd, iRow );

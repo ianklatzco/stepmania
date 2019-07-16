@@ -231,6 +231,7 @@ struct garv_state
 	{}
 };
 
+// This is called at the end of a song.
 static void DoRowEndRadarActualCalc(garv_state& state, RadarValues& out)
 {
 	if(state.judgable && state.last_tns_on_row != TapNoteScore_Invalid)
