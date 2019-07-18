@@ -386,6 +386,8 @@ int ScoreKeeperNormal::CalcNextToastyAt(int level)
 	return m_next_toasty_at + amount;
 }
 
+// In the case of a mine, report an updated score. Else, do nothing.
+// You are probably looking for HandleTapRowScore instead of this.
 void ScoreKeeperNormal::HandleTapScore( const TapNote &tn )
 {
 	TapNoteScore tns = tn.result.tns;
@@ -418,6 +420,7 @@ void ScoreKeeperNormal::HandleTapScore( const TapNote &tn )
 		MESSAGEMAN->Broadcast( msg );
 	}
 
+	// Implementation currently does nothing???
 	AddTapScore( tns );
 }
 
@@ -542,7 +545,11 @@ void ScoreKeeperNormal::HandleTapRowScore( const NoteData &nd, int iRow )
 	TapNoteScore scoreOfLastTap = NoteDataWithScoring::LastTapNoteWithResult( nd, iRow ).result.tns;
 	HandleTapNoteScoreInternal( scoreOfLastTap, TNS_W1, iRow );
 	
-	if ( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately )
+	const Style *curStyle = GAMESTATE->GetCurrentStyle(PLAYER_INVALID);
+
+	// special case for routine, any Game that uses counting jumps separately
+	if( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately ||
+		curStyle->m_StyleType == StyleType_TwoPlayersSharedSides )
 	{
 		HandleComboInternal( iNumHitContinueCombo, iNumHitMaintainCombo, iNumBreakCombo, iRow );
 	}
