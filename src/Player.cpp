@@ -73,9 +73,11 @@ public:
 			return true;
 		if( iRow >= m_iStart+int(m_vRows.size()) )
 			Resize( iRow+1-m_iStart );
+
 		const int iIndex = (iRow - m_iStart + m_iOffset) % m_vRows.size();
 		const bool ret = m_vRows[iIndex];
 		m_vRows[iIndex] = true;
+
 		while( m_vRows[m_iOffset] )
 		{
 			m_vRows[m_iOffset] = false;
@@ -1091,7 +1093,7 @@ void Player::Update( float fDeltaTime )
 		}
 	}
 
-	// Check for completely judged rows.
+	// Check for completely judged rows, do scoring.
 	UpdateJudgedRows();
 
 	// Check for TapNote misses
@@ -2387,6 +2389,7 @@ void Player::Step( int col, int row, const RageTimer &tm, bool bHeld, bool bRele
 		}
 
 		m_LastTapNoteScore = score;
+
 		if( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately )
 		{
 			if( pTN->type != TapNoteType_Mine )
@@ -2403,6 +2406,7 @@ void Player::Step( int col, int row, const RageTimer &tm, bool bHeld, bool bRele
 		}
 		else if( NoteDataWithScoring::IsRowCompletelyJudged(m_NoteData, iRowOfOverlappingNoteOrRow) )
 		{
+			// Make notes disappear when they cross over the receptors.
 			FlashGhostRow( iRowOfOverlappingNoteOrRow );
 		}
 	}
@@ -2459,6 +2463,7 @@ void Player::Step( int col, int row, const RageTimer &tm, bool bHeld, bool bRele
 	}
 }
 
+// It looks like this might be the function that records misses.
 void Player::UpdateTapNotesMissedOlderThan( float fMissIfOlderThanSeconds )
 {
 	//LOG->Trace( "Steps::UpdateTapNotesMissedOlderThan(%f)", fMissIfOlderThanThisBeat );
@@ -2486,6 +2491,7 @@ void Player::UpdateTapNotesMissedOlderThan( float fMissIfOlderThanSeconds )
 	{
 		TapNote &tn = *iter;
 
+		// If it's already been judged, skip out so that we don't record a miss?
 		if( !NeedsTapJudging(tn) )
 			continue;
 
@@ -2515,11 +2521,24 @@ void Player::UpdateJudgedRows()
 	// Look ahead far enough to catch any rows judged early.
 	const int iEndRow = BeatToNoteRow( m_Timing->GetBeatFromElapsedTime( m_pPlayerState->m_Position.m_fMusicSeconds + GetMaxStepDistanceSeconds() ) );
 	bool bAllJudged = true;
+
+	// Whether jumps should be judged as two separate notes or one.
+	// This is relevant for routine/couples mode.
+	// Currently, this is stored in the Game (aka dance vs pump).
 	const bool bSeparately = GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately;
 
 	{
+		// We have
+		// - an all_tracks_iterator for unjudged rows
+		// - an iLastSeenRow
+		// - an iRow, which is the current row from the iterator
+
+		// all_trackers_iterator is pretty complex; I think it's a container type to give you
+		// useful vector-like behavior for Tracks and NoteDatas.
 		NoteData::all_tracks_iterator iter = *m_pIterUnjudgedRows;
 		int iLastSeenRow = -1;
+
+		// for every row in the iterator
 		for( ; !iter.IsAtEnd()  &&  iter.Row() <= iEndRow; ++iter )
 		{
 			int iRow = iter.Row();
@@ -2532,36 +2551,55 @@ void Player::UpdateJudgedRows()
 			{
 				iLastSeenRow = iRow;
 
-				// crossed a nonempty row
+				// crossed a nonempty row that hasn't been judged yet
 				if( !NoteDataWithScoring::IsRowCompletelyJudged(m_NoteData, iRow) )
 				{
 					bAllJudged = false;
 					continue;
 				}
+
 				if( bAllJudged )
 					*m_pIterUnjudgedRows = iter;
+
+				// Returns true and skips out if the row has already been judged.
 				if( m_pJudgedRows->JudgeRow(iRow) )
 					continue;
+
+				// Gets the judgement of the last judged note.
 				const TapNoteResult &lastTNR = NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iRow ).result;
 
+				// Skip out if any of the following cases happened:
+				// GameConstantsAndTypes.h:enum TapNoteScore
+				// -----
+				// TNS_None, /**< There is no score involved with this one. */
+				// TNS_HitMine, /**< A mine was hit successfully. */
+				// TNS_AvoidMine, /**< A mine was avoided successfully. */
+				// TNS_CheckpointMiss, /**< A checkpoint was missed during a hold. */
 				if( lastTNR.tns < TNS_Miss )
 					continue;
+
 				if( bSeparately )
 				{
+					// for every track
 					for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
 					{
 						const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
+
+						// Don't judge irrelevant notes
 						if (tn.type == TapNoteType_Empty ||
 							tn.type == TapNoteType_Mine ||
 							tn.type == TapNoteType_AutoKeysound) continue;
+
 						SetJudgment( iRow, iTrack, tn );
 					}
 				}
-				else
+				else // otherwise judge rows with jumps once
 				{
 					SetJudgment( iRow, m_NoteData.GetFirstTrackWithTapOrHoldHead(iRow), NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iRow ) );
 				}
+
 				HandleTapRowScore( iRow );
+
 			}
 		}
 	}
@@ -2661,6 +2699,7 @@ void Player::UpdateJudgedRows()
 	}
 }
 
+// Make notes disappear when they cross over the receptors.
 void Player::FlashGhostRow( int iRow )
 {
 	TapNoteScore lastTNS = NoteDataWithScoring::LastTapNoteWithResult( m_NoteData, iRow ).result.tns;
@@ -2687,12 +2726,14 @@ void Player::FlashGhostRow( int iRow )
 	}
 }
 
+// Called right as the arrows cross the receptors.
 void Player::CrossedRows( int iLastRowCrossed, const RageTimer &now )
 {
 	//LOG->Trace( "Player::CrossedRows   %d    %d", iFirstRowCrossed, iLastRowCrossed );
 
 	NoteData::all_tracks_iterator &iter = *m_pIterUncrossedRows;
 	int iLastSeenRow = -1;
+	// for all rows that haven't yet crossed the receptors?
 	for( ; !iter.IsAtEnd()  &&  iter.Row() <= iLastRowCrossed; ++iter )
 	{
 		// Apply InitialHoldLife.
@@ -2857,6 +2898,8 @@ void Player::CrossedRows( int iLastRowCrossed, const RageTimer &now )
 	m_iFirstUncrossedRow = iLastRowCrossed+1;
 }
 
+// Called after a note passes the receptor.
+// Updates combo list, score, life.
 void Player::HandleTapRowScore( unsigned row )
 {
 	bool bNoCheating = true;
@@ -2881,6 +2924,7 @@ void Player::HandleTapRowScore( unsigned row )
 	if( scoreOfLastTap == TNS_Miss )
 		m_LastTapNoteScore = TNS_Miss;
 
+	// for each track, do a ScoreKeeper HandleTapScore
 	for( int track = 0; track < m_NoteData.GetNumTracks(); ++track )
 	{
 		const TapNote &tn = m_NoteData.GetTapNote( track, row );
@@ -2896,6 +2940,7 @@ void Player::HandleTapRowScore( unsigned row )
 			m_pSecondaryScoreKeeper->HandleTapScore( tn );
 	}
 
+	// do a ScoreKeeper HandleTapRowScore
 	if( m_pPrimaryScoreKeeper != NULL )
 		m_pPrimaryScoreKeeper->HandleTapRowScore( m_NoteData, row );
 	if( m_pSecondaryScoreKeeper != NULL )
