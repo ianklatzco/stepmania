@@ -2691,7 +2691,7 @@ void Player::FlashGhostRow( int iRow )
 
 	for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
 	{
-		TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
+		const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
 
 		if( m_pPlayerState->m_PlayerNumber != tn.pn )
 			continue;
@@ -2707,7 +2707,7 @@ void Player::FlashGhostRow( int iRow )
 		}
 		if( lastTNS >= m_pPlayerState->m_PlayerOptions.GetCurrent().m_MinTNSToHideNotes || bBlind )
 		{
-			tn.result.bHidden = true;
+			HideNote( iTrack, iRow );
 		}
 	}
 }
