@@ -2390,7 +2390,11 @@ void Player::Step( int col, int row, const RageTimer &tm, bool bHeld, bool bRele
 
 		m_LastTapNoteScore = score;
 
-		if( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately )
+		const Style *curStyle = GAMESTATE->GetCurrentStyle(PLAYER_INVALID);
+
+		// special case for routine, any Game that uses counting jumps separately
+		if( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately ||
+			curStyle->m_StyleType == StyleType_TwoPlayersSharedSides )
 		{
 			if( pTN->type != TapNoteType_Mine )
 			{
@@ -2526,6 +2530,7 @@ void Player::UpdateJudgedRows()
 	// This is relevant for routine/couples mode.
 	// Currently, this is stored in the Game (aka dance vs pump).
 	const bool bSeparately = GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately;
+	const Style *curStyle = GAMESTATE->GetCurrentStyle(PLAYER_INVALID);
 
 	{
 		// We have
@@ -2578,7 +2583,8 @@ void Player::UpdateJudgedRows()
 				if( lastTNR.tns < TNS_Miss )
 					continue;
 
-				if( bSeparately )
+				// special case for routine, any Game that uses counting jumps separately
+				if( bSeparately || curStyle->m_StyleType == StyleType_TwoPlayersSharedSides )
 				{
 					// for every track
 					for( int iTrack = 0; iTrack < m_NoteData.GetNumTracks(); ++iTrack )
