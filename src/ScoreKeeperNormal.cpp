@@ -545,7 +545,11 @@ void ScoreKeeperNormal::HandleTapRowScore( const NoteData &nd, int iRow )
 	TapNoteScore scoreOfLastTap = NoteDataWithScoring::LastTapNoteWithResult( nd, iRow ).result.tns;
 	HandleTapNoteScoreInternal( scoreOfLastTap, TNS_W1, iRow );
 	
-	if ( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately )
+	const Style *curStyle = GAMESTATE->GetCurrentStyle(PLAYER_INVALID);
+
+	// special case for routine, any Game that uses counting jumps separately
+	if( GAMESTATE->GetCurrentGame()->m_bCountNotesSeparately ||
+		curStyle->m_StyleType == StyleType_TwoPlayersSharedSides )
 	{
 		HandleComboInternal( iNumHitContinueCombo, iNumHitMaintainCombo, iNumBreakCombo, iRow );
 	}
