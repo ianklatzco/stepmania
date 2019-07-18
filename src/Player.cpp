@@ -2616,10 +2616,6 @@ void Player::UpdateJudgedRows()
 					{
 						const TapNote &tn = m_NoteData.GetTapNote( iTrack, iRow );
 
-						// Prevent notes being scored by both players in couples mode
-						if( m_pPlayerState->m_PlayerNumber != tn.pn )
-							continue;
-
 						SetJudgment( iRow, iTrack, tn );
 						break;
 					}
