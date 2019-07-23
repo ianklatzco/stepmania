@@ -165,6 +165,7 @@ void PlayerInfo::Load( PlayerNumber pn, MultiPlayer mp, bool bShowNoteField, int
 	if( m_pSecondaryScoreDisplay )
 		m_pSecondaryScoreDisplay->Init( pPlayerState, pPlayerStageStats );
 
+	// SCORE_KEEPER_CLASS is a ThemeMetric, so I think it pulls from the theme
 	m_pPrimaryScoreKeeper = ScoreKeeper::MakeScoreKeeper( SCORE_KEEPER_CLASS, pPlayerState, pPlayerStageStats, masterPlayer );
 
 	switch( GAMESTATE->m_PlayMode )

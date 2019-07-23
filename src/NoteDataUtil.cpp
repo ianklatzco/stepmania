@@ -292,12 +292,15 @@ void NoteDataUtil::LoadFromSMNoteDataString( NoteData &out, const RString &sSMNo
 	out.Init();
 	out.SetNumTracks( iNumTracks );
 
-	if( !bComposite )
+	// Composite refers to the routine chart type. It is probably also used for couples style.
+	if( !bComposite ) // load and return out if we're not handling a routine chart.
 	{
 		LoadFromSMNoteDataStringWithPlayer( out, sSMNoteData, 0, sSMNoteData.size(),
 						    PLAYER_INVALID, iNumTracks );
 		return;
 	}
+
+	// everything that follows concerns loading composite charts.
 
 	int start = 0, size = -1;
 
