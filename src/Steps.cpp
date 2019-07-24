@@ -101,6 +101,11 @@ bool Steps::IsNoteDataEmpty() const
 	return this->m_sNoteDataCompressed.empty();
 }
 
+/* GetNoteDataFromSimfile runs a loader, eg SSC, and calls
+ * loader.LoadNoteDataFromSimfile. This creates a msd (general name for
+ * SM's file format), iterates over all the params (key value pairs eg
+ * TITLE: blah;), and eventually does a SetSMNoteData, then TidyUpData.
+*/
 bool Steps::GetNoteDataFromSimfile()
 {
 	// Replace the line below with the Steps' cache file.
@@ -207,9 +212,14 @@ NoteData Steps::GetNoteData() const
 
 void Steps::SetSMNoteData( const RString &notes_comp_ )
 {
+	// create a empty vector<TrackMap>
 	m_pNoteData->Init();
+
 	m_bNoteDataIsFilled = false;
 
+	// copy raw notedata into Steps object
+	// the variable names imply that the data is compressed, 
+	// but printing the contents of notes_comp_ shows me newlines and 01's, so...
 	m_sNoteDataCompressed = notes_comp_;
 	m_iHash = 0;
 }

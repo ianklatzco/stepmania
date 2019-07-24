@@ -856,6 +856,7 @@ bool SSCLoader::LoadNoteDataFromSimfile( const RString & cachePath, Steps &out )
 	float storedVersion = 0;
 	const unsigned values = msd.GetNumValues();
 	
+	// iterate over all the parms in the MSD
 	for (unsigned i = 0; i < values; i++)
 	{
 		const MsdFile::value_t &params = msd.GetValue(i);
@@ -868,7 +869,7 @@ bool SSCLoader::LoadNoteDataFromSimfile( const RString & cachePath, Steps &out )
 			parser_helper.load_note_data_handlers.find(valueName);
 		if(handler != parser_helper.load_note_data_handlers.end())
 		{
-			if(tryingSteps)
+			if(tryingSteps) // loading steps data
 			{
 				switch(handler->second)
 				{
