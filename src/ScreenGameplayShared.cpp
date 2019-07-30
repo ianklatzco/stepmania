@@ -16,9 +16,11 @@ void ScreenGameplayShared::FillPlayerInfo( vector<PlayerInfo> &vPlayerInfoOut )
 
 	/* The master player is where all of the real work takes place.  The other player exists
 	 * only so we have a place to split stats out into at the end. */
-	vPlayerInfoOut.resize( 2 );
+	vPlayerInfoOut.resize( 1 );
+
+	// PlayerInfo::Load( PlayerNumber pn, MultiPlayer mp, bool bShowNoteField, int iAddToDifficulty, const PlayerInfo* masterPlayer )
 	vPlayerInfoOut[master].Load( master, MultiPlayer_Invalid, true, Difficulty_Invalid );
-	vPlayerInfoOut[other].Load( other, MultiPlayer_Invalid, false, Difficulty_Invalid, &vPlayerInfoOut[master] );
+	// vPlayerInfoOut[other].Load( other, MultiPlayer_Invalid, false, Difficulty_Invalid, &vPlayerInfoOut[master] );
 }
 
 PlayerInfo &ScreenGameplayShared::GetPlayerInfoForInput( const InputEventPlus& iep )

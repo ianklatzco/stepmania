@@ -1042,6 +1042,7 @@ void GameState::SetCompatibleStylesForPlayers()
 	}
 }
 
+// A little bit of test-like code to make sure state is consistent for SharedSides.
 void GameState::ForceSharedSidesMatch()
 {
 	PlayerNumber pn_with_shared= PLAYER_INVALID;
@@ -1707,10 +1708,14 @@ bool GameState::IsHumanPlayer( PlayerNumber pn ) const
 	{
 	case StyleType_TwoPlayersTwoSides:
 	case StyleType_TwoPlayersSharedSides:
-		return true;
+		// return true;
+		// what the fuck
+		// if in routine mode, always return is human player?
+		// ok i guess whatever
 	case StyleType_OnePlayerOneSide:
 	case StyleType_OnePlayerTwoSides:
 		return pn == this->GetMasterPlayerNumber();
+		// one player modes: return IT_IsHumanPlayer if the mpn matches
 	default:
 		FAIL_M(ssprintf("Invalid style type: %i", type));
 	}
@@ -3180,7 +3185,7 @@ public:
 			luaL_error( L, "Too many sides joined for style %s", pStyle->m_szName );
 		}
 		else if( p->GetNumSidesJoined() == 1 &&
-			( st == StyleType_TwoPlayersTwoSides || st == StyleType_TwoPlayersSharedSides ) )
+			( st == StyleType_TwoPlayersTwoSides /*|| st == StyleType_TwoPlayersSharedSides*/ ) )
 		{
 			luaL_error( L, "Too few sides joined for style %s", pStyle->m_szName );
 		}

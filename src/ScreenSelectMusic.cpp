@@ -1487,8 +1487,8 @@ bool ScreenSelectMusic::MenuStart( const InputEventPlus &input )
 		}
 
 		// Now that Steps have been chosen, set a Style that can play them.
-		GAMESTATE->SetCompatibleStylesForPlayers();
-		GAMESTATE->ForceSharedSidesMatch();
+		// GAMESTATE->SetCompatibleStylesForPlayers();
+		// GAMESTATE->ForceSharedSidesMatch(); // try killing this for now; 
 		GAMESTATE->prepare_song_for_gameplay();
 
 		/* If we're currently waiting on song assets, abort all except the music

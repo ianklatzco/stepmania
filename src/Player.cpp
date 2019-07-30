@@ -636,6 +636,9 @@ static void GenerateCacheDataStructure(PlayerState *pPlayerState, const NoteData
 
 }
 
+/* Appears to just load NoteData, based on a comment in the constructor that
+ * claims as much.
+ */
 void Player::Load()
 {
 	m_bLoaded = true;
