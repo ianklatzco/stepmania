@@ -2694,6 +2694,7 @@ void Player::UpdateJudgedRows()
 			else
 				ChangeLife( tn.result.tns );
 
+			// Call out to ScoreDisplayLifeTime, which appears to be a survival mode feature.
 			if( m_pScoreDisplay )
 				m_pScoreDisplay->OnJudgment( tn.result.tns );
 			if( m_pSecondaryScoreDisplay )
@@ -2966,7 +2967,7 @@ void Player::HandleTapRowScore( unsigned row )
 			m_pSecondaryScoreKeeper->HandleTapScore( tn );
 	}
 
-	// do a ScoreKeeper HandleTapRowScore
+	// do a ScoreKeeper HandleTapRowScore **for the entire row**
 	if( m_pPrimaryScoreKeeper != NULL )
 		m_pPrimaryScoreKeeper->HandleTapRowScore( m_NoteData, row );
 	if( m_pSecondaryScoreKeeper != NULL )
