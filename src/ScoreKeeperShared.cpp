@@ -5,6 +5,8 @@
 #include "PlayerState.h"
 #include "ScreenGameplay.h"
 
+// TODO there's lots of frivolous checks. Remove them.
+
 /* In Routine, we have two Players, but the master one handles all of the scoring.  The other
  * one will just receive misses for everything, and shouldn't do anything. 
  * Ideally we can implement things so that each player gets judged for each note. -ian5v */
