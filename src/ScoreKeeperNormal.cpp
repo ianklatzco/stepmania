@@ -531,6 +531,13 @@ void ScoreKeeperNormal::GetRowCounts( const NoteData &nd, int iRow,
 	}
 }
 
+// Non-complete summary:
+// Get LastTapNoteWithResult
+// Does HandleCombo -- either for the row, or with a weird exception for routine
+// Updates dance points with HandleTapNoteScoreInternal
+// Updates numerical score with AddTapRowScore (I think it's like 99.41?)
+// Sends results to NetworkSync Manager
+// Broadcasts a message via MESSAGEMAN to the theme so the theme knows to hide notes that have been hit
 void ScoreKeeperNormal::HandleTapRowScore( const NoteData &nd, int iRow )
 {
 	int iNumHitContinueCombo, iNumHitMaintainCombo, iNumBreakCombo;
@@ -543,6 +550,7 @@ void ScoreKeeperNormal::HandleTapRowScore( const NoteData &nd, int iRow )
 	m_iNumNotesHitThisRow = iNumTapsInRow;
 
 	TapNoteScore scoreOfLastTap = NoteDataWithScoring::LastTapNoteWithResult( nd, iRow ).result.tns;
+
 	HandleTapNoteScoreInternal( scoreOfLastTap, TNS_W1, iRow );
 	
 	const Style *curStyle = GAMESTATE->GetCurrentStyle(PLAYER_INVALID);
@@ -561,6 +569,7 @@ void ScoreKeeperNormal::HandleTapRowScore( const NoteData &nd, int iRow )
 	if( m_pPlayerState->m_PlayerNumber != PLAYER_INVALID )
 		MESSAGEMAN->Broadcast( enum_add2(Message_CurrentComboChangedP1,m_pPlayerState->m_PlayerNumber) );
 
+	// Update numerical score
 	AddTapRowScore( scoreOfLastTap, nd, iRow );		// only score once per row
 
 	// handle combo logic
@@ -607,12 +616,15 @@ void ScoreKeeperNormal::HandleTapRowScore( const NoteData &nd, int iRow )
 		MESSAGEMAN->Broadcast(msg);
 	}
 
+	// Send results to NetworkSyncManager
 	// TODO: Remove indexing with PlayerNumber
 	PlayerNumber pn = m_pPlayerState->m_PlayerNumber;
 	float offset = NoteDataWithScoring::LastTapNoteWithResult( nd, iRow ).result.fTapNoteOffset;
 	NSMAN->ReportScore( pn, scoreOfLastTap,
 			m_pPlayerStageStats->m_iScore,
 			m_pPlayerStageStats->m_iCurCombo, offset, m_iNumNotesHitThisRow);
+
+	// Send a to theme, uses this to hide notes that have been hit.
 	Message msg( "ScoreChanged" );
 	msg.SetParam( "PlayerNumber", m_pPlayerState->m_PlayerNumber );
 	msg.SetParam( "MultiPlayer", m_pPlayerState->m_mp );
